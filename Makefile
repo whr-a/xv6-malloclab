@@ -1,5 +1,6 @@
 K=kernel
 U=user
+T=traces
 
 OBJS = \
   $K/entry.o \
@@ -87,7 +88,7 @@ $U/initcode: $U/initcode.S
 tags: $(OBJS) _init
 	etags *.S *.c
 
-ULIB = $U/ulib.o $U/usys.o $U/printf.o $U/umalloc.o
+ULIB = $U/ulib.o $U/usys.o $U/printf.o $U/umalloc.o $U/ummalloc.o
 
 _%: %.o $(ULIB)
 	$(LD) $(LDFLAGS) -T $U/user.ld -o $@ $^
@@ -132,9 +133,26 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
+	$U/_ummalloc_test\
 
-fs.img: mkfs/mkfs README $(UPROGS)
-	mkfs/mkfs fs.img README $(UPROGS)
+TRACES=\
+	$T/amptjp-bal.rep\
+	$T/binary-bal.rep\
+	$T/coalescing-bal.rep\
+	$T/expr-bal.rep\
+	$T/random-bal.rep\
+	$T/realloc-bal.rep\
+	$T/short2-bal.rep\
+	$T/binary2-bal.rep\
+	$T/cccp-bal.rep\
+	$T/cp-decl-bal.rep\
+	$T/random2-bal.rep\
+	$T/realloc2-bal.rep\
+	$T/short1-bal.rep\
+
+
+fs.img: mkfs/mkfs README $(UPROGS) $(TRACES)
+	mkfs/mkfs fs.img README $(UPROGS) $(TRACES)
 
 -include kernel/*.d user/*.d
 

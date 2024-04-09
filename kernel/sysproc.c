@@ -89,3 +89,9 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_getclk(void)
+{
+  return *(uint64*) CLINT_MTIME;
+}

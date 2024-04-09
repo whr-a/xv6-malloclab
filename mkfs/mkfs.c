@@ -132,9 +132,13 @@ main(int argc, char *argv[])
     char *shortname;
     if(strncmp(argv[i], "user/", 5) == 0)
       shortname = argv[i] + 5;
+    else if(strncmp(argv[i], "traces/", 7) == 0)
+      shortname = argv[i] + 7;
     else
       shortname = argv[i];
     
+    if (index(shortname, '/'))
+      printf("!!!\n%s %s\n",argv[i],shortname);
     assert(index(shortname, '/') == 0);
 
     if((fd = open(argv[i], 0)) < 0)
