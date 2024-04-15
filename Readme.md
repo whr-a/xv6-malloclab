@@ -39,7 +39,7 @@ void *mm_realloc(void *ptr, size_t size);
 
 ### 测试
 
-测试程序为 `user/ummalloc_test.c` ，使用 `make qemu` 启动 xv6 后，在终端中使用 `ummalloc_test tracefile` 即可进行测试，仓库中的 `traces` 文件夹中包含了所有用于测试的样例。每个测试样例的前两行为该样例中的最大内存区域数量和操作数量，接下来的每一行会是：
+测试程序为 `user/ummalloc_test.c` ，使用 `make qemu` 启动 xv6 后，在终端中使用 `ummalloc_test <tracefile>` 即可进行测试，仓库中的 `traces` 文件夹中包含了所有用于测试的样例（即所有可用的 `<tracefile>`）。每个测试样例的前两行为该样例中的最大内存区域数量和操作数量，接下来的每一行会是：
 
 - `a <id> <size>` ：执行`ptr[id] = mm_malloc(size);`
 - `f <id>`：执行`mm_free(ptr[id]);`
