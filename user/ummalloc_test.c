@@ -93,8 +93,8 @@ void add_range(void* lo, uint size) {
 
 void rm_range(void* lo) {
   struct range_t* curr;
-  for (curr = range_head; curr->nxt->lo != lo; curr = curr->nxt) {
-    if (curr->nxt->lo != lo) break;
+  for (curr = range_head; curr->nxt; curr = curr->nxt) {
+    if (curr->nxt->lo == lo) break;
   }
   struct range_t* rm = curr->nxt;
   if (rm == 0) sys_err("range to free not found");
