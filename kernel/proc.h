@@ -80,7 +80,12 @@ struct trapframe {
 };
 
 enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
-
+struct shm_page {
+  int id;                   // 共享内存页的ID
+  int ref_count;            // 引用计数
+  char *frame;              // 指向物理内存的指针
+  int permissions;          // 权限标志
+};
 // Per-process state
 struct proc {
   struct spinlock lock;
@@ -104,4 +109,5 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  struct shm_page* shm_pages[MAX_SHM_PAGES];
 };

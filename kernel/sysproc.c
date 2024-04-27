@@ -95,3 +95,47 @@ sys_getclk(void)
 {
   return *(uint64*) CLINT_MTIME;
 }
+
+uint64
+sys_shm_alloc(void)
+{
+  int permissions;
+  argint(0, &permissions);
+  return shm_alloc(permissions);
+}
+
+uint64
+sys_shm_attach(void)
+{
+  int id;
+  uint64 addr;
+  argint(0, &id);
+  argaddr(1, &addr);
+  return shm_attach(id, (void*)addr);
+}
+
+uint64
+sys_shm_close(void)
+{
+  int id;
+  argint(0, &id);
+  return shm_close(id);
+}
+
+uint64
+sys_shm_query(void)
+{
+  int id;
+  argint(0, &id);
+  return shm_query_permissions(id);
+}
+
+uint64
+sys_shm_set(void)
+{
+  int id;
+  int permissions;
+  argint(0, &id);
+  argint(1, &permissions);
+  return shm_set_permissions(id, permissions);
+}

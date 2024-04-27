@@ -1,0 +1,13 @@
+ummalloc_test amptjp-bal.rep
+ummalloc_test binary-bal.rep
+ummalloc_test binary2-bal.rep
+ummalloc_test cccp-bal.rep
+ummalloc_test coalescing-bal.rep
+ummalloc_test cp-decl-bal.rep
+ummalloc_test expr-bal.rep
+ummalloc_test random-bal.rep
+ummalloc_test random2-bal.rep
+ummalloc_test realloc-bal.rep
+ummalloc_test realloc2-bal.rep
+ummalloc_test short1-bal.rep
+ummalloc_test short2-bal.rep

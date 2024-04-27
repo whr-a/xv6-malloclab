@@ -21,3 +21,8 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #define SYS_getclk 22
+#define SYS_shm_alloc  23
+#define SYS_shm_attach 24
+#define SYS_shm_close  25
+#define SYS_shm_query  26
+#define SYS_shm_set 27

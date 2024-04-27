@@ -5,7 +5,10 @@
 #include "riscv.h"
 #include "defs.h"
 #include "fs.h"
-
+#include "spinlock.h"
+#include "proc.h" 
+struct shm_page shmtab[MAX_SHM_PAGES];
+struct spinlock shm_table_lock;
 /*
  * the kernel's page table.
  */
@@ -439,4 +442,75 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
   } else {
     return -1;
   }
+}
+
+void shm_init(void) {
+    for(int i = 0; i < MAX_SHM_PAGES; i++) {
+        shmtab[i].id = -1;
+        shmtab[i].ref_count = 0;
+        shmtab[i].frame = 0;
+    }
+}
+
+int shm_alloc(int permissions) {
+    acquire(&shm_table_lock);
+    for(int i = 0; i < MAX_SHM_PAGES; i++) {
+        if(shmtab[i].id == -1) {  // 查找空闲的共享内存结构
+            shmtab[i].frame = kalloc();  // 分配物理页
+            if(shmtab[i].frame == 0) {
+                release(&shm_table_lock);
+                return -1;  // 分配失败
+            }
+            shmtab[i].id = i;  // 使用索引作为ID
+            shmtab[i].ref_count = 1;
+            shmtab[i].permissions = permissions;
+            memset(shmtab[i].frame, 0, PGSIZE);
+            release(&shm_table_lock);
+            return i;  // 返回共享内存页ID
+        }
+    }
+    release(&shm_table_lock);
+    return -1;  // 没有可用的共享内存结构
+}
+
+int shm_attach(int id, char *addr) {
+    struct proc *p = myproc();
+    if(id < 0 || id >= MAX_SHM_PAGES || shmtab[id].id == -1) return -1;
+
+    acquire(&shm_table_lock);
+    mappages(p->pagetable, (uint64)addr, PGSIZE, (uint64)shmtab[id].frame, shmtab[id].permissions);
+    p->shm_pages[id] = &shmtab[id];
+    shmtab[id].ref_count++;
+    release(&shm_table_lock);
+    return 0;
+}
+
+int shm_close(int id) {
+    if(id < 0 || id >= MAX_SHM_PAGES || shmtab[id].id == -1) return -1;
+
+    acquire(&shm_table_lock);
+    shmtab[id].ref_count--;
+    if(shmtab[id].ref_count == 0) {
+        kfree(shmtab[id].frame);
+        shmtab[id].id = -1;  // 标记为未使用
+    }
+    release(&shm_table_lock);
+    return 0;
+}
+int shm_query_permissions(int id) {
+    if(id < 0 || id >= MAX_SHM_PAGES || shmtab[id].id == -1) return -1;
+
+    int ret = 0;
+    acquire(&shm_table_lock);
+    ret = shmtab[id].permissions;
+    release(&shm_table_lock);
+    return ret;
+}
+int shm_set_permissions(int id, int permissions) {
+    if(id < 0 || id >= MAX_SHM_PAGES || shmtab[id].id == -1) return -1;
+
+    acquire(&shm_table_lock);
+    shmtab[id].permissions = permissions;
+    release(&shm_table_lock);
+    return 0;
 }
